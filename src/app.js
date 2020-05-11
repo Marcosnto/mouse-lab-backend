@@ -10,19 +10,42 @@ app.use(cors());
 
 const repositories = [];
 
-app.get("/repositories", (request, response) => {
-  return response.json(repositories);
-});
-
+//CREATE
 app.post("/repositories", (request, response) => {
   const { title, url, techs } = request.body; //the user input those informations
-  const newRepository = { id: uuid(), title, techs, likes:0 } //we put the id and likes(always initiated with 0)
+  const newRepository = { id: uuid(), title, url, techs, likes:0, dislikes: 0} //we put the id and likes(always initiated with 0)
 
   repositories.push(newRepository);
 
   return response.status(201).json(repositories);
 });
 
+//LIKE
+app.post("/repositories/:id/like", (request, response) => {
+  const { id } = request.params;
+  const { like } = request.body;
+
+  const repositoryIndex = repositories.findIndex(repository => repository.id === id);
+
+  if (repositoryIndex < 0){
+    return response.status(400).json({error: 'Repository dont exist'});
+  }
+
+  if (repositories[repositoryIndex].likes >= 0 && like > 0){
+    repositories[repositoryIndex].likes += like;
+  }else{
+    return response.status(400).json({error: 'Number of likes must to be bigger then zero'})
+  }
+
+  return response.json(repositories);
+});
+
+//READ
+app.get("/repositories", (request, response) => {
+  return response.json(repositories);
+});
+
+//UPDATE
 app.put("/repositories/:id", (request, response) => {
   const { id } = request.params; //we get the id through url
   const { title, url, techs } = request.body; //the user only can modify those fields, they'll send across requisiton
@@ -34,16 +57,24 @@ app.put("/repositories/:id", (request, response) => {
   }
 
   const repository = {
+    id,
     title,
     url, 
-    techs
+    techs,
+    likes: repositories[repositoryIndex].likes, 
+    dislikes: repositories[repositoryIndex].dislikes,
   };
+
+  // repository[likes] = repositories[repositoryIndex].likes;
+  // repository[dislikes] = repositories[repositoryIndex].dislikes;
 
   repositories[repositoryIndex] = repository;
 
   return response.status(200).json(repositories);
+
 });
 
+//DELETE
 app.delete("/repositories/:id", (request, response) => {
   const { id } = request.params;
 
@@ -56,19 +87,6 @@ app.delete("/repositories/:id", (request, response) => {
   repositories.splice(repositoryIndex,1); //remove one position from the argument passed
 
   return response.status(204).send;
-});
-
-app.post("/repositories/:id/like", (request, response) => {
-  const { id, like } = request.params;
-  console.log(id);
-  const repositoryIndex = repositories.findIndex(repository => repository.id === id);
-  console.log(repositoryIndex);
-  if (repositoryIndex < 0){
-    return response.status(400).json({error: 'Repository dont exist'});
-  }
-
-  repositories[repositoryIndex].like = like;
-  return response.json(repositories);
 });
 
 module.exports = app;
