@@ -60,7 +60,13 @@ app.post("/repositories/:id/dislike", (request, response) => {
 
 //READ
 app.get("/repositories", (request, response) => {
-  return response.json(repositories);
+  const { tech } = request.query;
+  console.log(tech);
+  const results = tech 
+    ? repositories.filter(project => project.techs.includes(tech))
+    : repositories;
+
+  return response.json(results);
 });
 
 //UPDATE
