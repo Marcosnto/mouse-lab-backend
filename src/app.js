@@ -61,9 +61,9 @@ app.post("/repositories/:id/dislike", (request, response) => {
 //READ
 app.get("/repositories", (request, response) => {
   const { tech } = request.query;
-  console.log(tech);
-  const results = tech 
-    ? repositories.filter(project => project.techs.includes(tech))
+  
+  const results = tech
+    ? repositories.filter(project => (project.techs).toLowerCase().includes(tech.toLowerCase()))
     : repositories;
 
   return response.json(results);
