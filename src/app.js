@@ -83,9 +83,6 @@ app.put("/repositories/:id", (request, response) => {
     dislikes: repositories[repositoryIndex].dislikes,
   };
 
-  // repository[likes] = repositories[repositoryIndex].likes;
-  // repository[dislikes] = repositories[repositoryIndex].dislikes;
-
   repositories[repositoryIndex] = repository;
 
   return response.status(200).json(repositories);
