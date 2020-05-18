@@ -23,7 +23,6 @@ app.post("/repositories", (request, response) => {
 //LIKE
 app.post("/repositories/:id/like", (request, response) => {
   const { id } = request.params;
-  const { like } = request.body;
 
   const repositoryIndex = repositories.findIndex(repository => repository.id === id);
 
@@ -31,11 +30,7 @@ app.post("/repositories/:id/like", (request, response) => {
     return response.status(400).json({error: 'Repository dont exist'});
   }
 
-  if (repositories[repositoryIndex].likes >= 0 && like > 0){
-    repositories[repositoryIndex].likes += like;
-  }else{
-    return response.status(400).json({error: 'Number of likes must to be bigger then zero'})
-  }
+  repositories[repositoryIndex].likes+=1;
 
   return response.json(repositories);
 });
@@ -51,11 +46,7 @@ app.post("/repositories/:id/dislike", (request, response) => {
     return response.status(400).json({error: 'Repository dont exist'});
   }
 
-  if (repositories[repositoryIndex].dislikes >= 0 && dislike > 0){
-    repositories[repositoryIndex].dislikes += dislike;
-  }else {
-    return response.status(400).json({error: 'Number of dislikes must to be bigger then zero'});
-  }
+    repositories[repositoryIndex].dislikes+=1;
 });
 
 //READ
