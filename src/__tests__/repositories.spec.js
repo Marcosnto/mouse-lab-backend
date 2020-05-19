@@ -2,7 +2,7 @@ const request = require("supertest");
 const app = require("../app");
 const { isUuid } = require("uuidv4");
 
-describe("Repositories", () => {
+describe("Repositories", async () => {
   it("should be able to create a new repository", async () => {
     const response = await request(app)
       .post("/repositories")
@@ -11,14 +11,15 @@ describe("Repositories", () => {
         title: "Umbriel",
         techs: ["Node", "Express", "TypeScript"]
       });
-
+        
     expect(isUuid(response.body.id)).toBe(true);
 
     expect(response.body).toMatchObject({
       url: "https://github.com/Rocketseat/umbriel",
       title: "Umbriel",
       techs: ["Node", "Express", "TypeScript"],
-      likes: 0
+      likes: 0,
+      dislikes: 0
     });
   });
 
@@ -40,7 +41,8 @@ describe("Repositories", () => {
           url: "https://github.com/Rocketseat/umbriel",
           title: "Umbriel",
           techs: ["Node", "Express", "TypeScript"],
-          likes: 0
+          likes: 0,
+          dislikes: 0
         }
       ])
     );

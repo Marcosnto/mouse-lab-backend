@@ -17,7 +17,7 @@ app.post("/repositories", (request, response) => {
 
   repositories.push(newRepository);
 
-  return response.status(201).json(repositories);
+  return response.status(201).json(newRepository);
 });
 
 //LIKE
@@ -30,9 +30,10 @@ app.post("/repositories/:id/like", (request, response) => {
     return response.status(400).json({error: 'Repository dont exist'});
   }
 
-  repositories[repositoryIndex].likes+=1;
+  const repository = repositories[repositoryIndex];
+  repository.likes+=1;
 
-  return response.json(repositories);
+  return response.json(repository);
 });
 
 //DISLIKE
@@ -46,10 +47,14 @@ app.post("/repositories/:id/dislike", (request, response) => {
     return response.status(400).json({error: 'Repository dont exist'});
   }
 
-    repositories[repositoryIndex].dislikes+=1;
+  const repository = repositories[repositoryIndex];
+  repository.dislikes+=1;
+
+  return response.status(200).json(repository);
+
 });
 
-//READ
+//LIST
 app.get("/repositories", (request, response) => {
   const { tech } = request.query;
   
@@ -57,12 +62,12 @@ app.get("/repositories", (request, response) => {
     ? repositories.filter(project => (project.techs).toLowerCase().includes(tech.toLowerCase()))
     : repositories;
 
-  return response.json(results);
+  return response.status(200).json(results);
 });
 
 //UPDATE
 app.put("/repositories/:id", (request, response) => {
-  const { id } = request.params; //we get the id through url
+  const { id } = request.params;//we get the id throughl url
   const { title, url, techs } = request.body; //the user only can modify those fields, they'll send across requisiton
 
   const repositoryIndex = repositories.findIndex(repository => repository.id === id); //verify if id is exists, if exists this return a valor equal or bigger then zero
@@ -82,7 +87,7 @@ app.put("/repositories/:id", (request, response) => {
 
   repositories[repositoryIndex] = repository;
 
-  return response.status(200).json(repositories);
+  return response.status(200).json(repository);
 
 });
 
@@ -96,9 +101,11 @@ app.delete("/repositories/:id", (request, response) => {
     return response.status(400).json({error: 'Repository dont exist'});
   }
 
+  const deleted = repositories[repositoryIndex];
+
   repositories.splice(repositoryIndex,1); //remove one position from the argument passed
 
-  return response.status(204).send;
+  return response.status(204).send(deleted);
 });
 
 module.exports = app;
