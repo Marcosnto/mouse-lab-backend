@@ -39,7 +39,6 @@ app.post("/repositories/:id/like", (request, response) => {
 //DISLIKE
 app.post("/repositories/:id/dislike", (request, response) => {
   const { id } = request.params;
-  const { dislike } = request.body;
 
   const repositoryIndex = repositories.findIndex(repository => repository.id === id);
 
@@ -102,10 +101,10 @@ app.delete("/repositories/:id", (request, response) => {
   }
 
   const deleted = repositories[repositoryIndex];
-
+  
   repositories.splice(repositoryIndex,1); //remove one position from the argument passed
-
-  return response.status(204).send(deleted);
+  
+  return response.status(204).json(deleted);
 });
 
 module.exports = app;
