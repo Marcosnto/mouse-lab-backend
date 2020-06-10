@@ -12,8 +12,8 @@ const repositories = [];
 
 //CREATE
 app.post("/repositories", (request, response) => {
-  const { title, url, techs } = request.body; //the user input those informations
-  const newRepository = { id: uuid(), title, url, techs, likes:0, dislikes: 0} //we put the id and likes(always initiated with 0)
+  const { title, owner, url, techs } = request.body; //the user input those informations
+  const newRepository = { id: uuid(), title, owner, url, techs, likes:0, favorite: false} //we put the id and likes(always initiated with 0)
 
   repositories.push(newRepository);
 
@@ -36,8 +36,8 @@ app.post("/repositories/:id/like", (request, response) => {
   return response.json(repository);
 });
 
-//DISLIKE
-app.post("/repositories/:id/dislike", (request, response) => {
+//SET FAVORITES
+app.put("/repositories/:id/favorite", (request, response) => {
   const { id } = request.params;
 
   const repositoryIndex = repositories.findIndex(repository => repository.id === id);
@@ -47,10 +47,22 @@ app.post("/repositories/:id/dislike", (request, response) => {
   }
 
   const repository = repositories[repositoryIndex];
-  repository.dislikes+=1;
+  repository.favorite === false ? repository.favorite = true : repository.favorite = false;
 
   return response.status(200).json(repository);
 
+});
+
+//LIST ALL FAVORITES
+app.get("/repositories/favorites", (request, response) => {
+
+  const results = repositories.filter(repository => {
+    if (repository.favorite === true) {
+      return repository;
+    }
+  });
+
+  return response.status(200).json(results);
 });
 
 //LIST
@@ -67,7 +79,7 @@ app.get("/repositories", (request, response) => {
 //UPDATE
 app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;//we get the id throughl url
-  const { title, url, techs } = request.body; //the user only can modify those fields, they'll send across requisiton
+  const { title, owner, url, techs } = request.body; //the user only can modify those fields, they'll send across requisiton
 
   const repositoryIndex = repositories.findIndex(repository => repository.id === id); //verify if id is exists, if exists this return a valor equal or bigger then zero
 
@@ -78,10 +90,11 @@ app.put("/repositories/:id", (request, response) => {
   const repository = {
     id,
     title,
+    owner,
     url, 
     techs,
     likes: repositories[repositoryIndex].likes, 
-    dislikes: repositories[repositoryIndex].dislikes,
+    favorite,
   };
 
   repositories[repositoryIndex] = repository;
